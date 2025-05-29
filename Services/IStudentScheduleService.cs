@@ -8,7 +8,7 @@ namespace Services
 {
     public interface IStudentScheduleService
     {
-        bool UpdateAttendance(int studentId, int scheduleId, bool isPresent);
+        bool UpdateAttendance(List<int > studentIdList,int scheduleId);
         bool CanUpdate(DateOnly date, TimeOnly time);
     }
 }

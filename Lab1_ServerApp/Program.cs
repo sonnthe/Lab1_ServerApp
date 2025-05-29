@@ -21,7 +21,7 @@ public class Program
     private static IStudentService? _studentService;
     private static ICourseService? _courseService;
     private static  IScheduleService? _scheduleService;
-    private static readonly IStudentScheduleService? _studentScheduleService = ServiceProvider?.GetService<IStudentScheduleService>();
+    private static IStudentScheduleService? _studentScheduleService;
     public static void Main(string[] args)
     {
         SetUpDependency();
@@ -84,7 +84,7 @@ public class Program
         string response = String.Empty;
         int count;
         NetworkStream stream = client.GetStream();
-        Byte[] bytes = new Byte[32];
+        Byte[] bytes = new Byte[1024];
         try
         {
             while ((count = stream.Read(bytes, 0, bytes.Length)) != 0)
@@ -111,19 +111,11 @@ public class Program
                 }
                 else if (data.StartsWith("UpdateAttendance:"))
                 {
-                    var parts = data.Split(':');
-                    int studentId = int.Parse(parts[1]);
-                    int scheduleId = int.Parse(parts[2]);
-                    bool isPresent = bool.Parse(parts[3]);
-                    Console.WriteLine($"Updating attendance for student ID: {studentId}, schedule ID: {scheduleId}, isPresent: {isPresent}");
-                    if (_studentScheduleService!.UpdateAttendance(studentId, scheduleId, isPresent))
-                    {
-                        response = "Attendance updated successfully.";
-                    }
-                    else
-                    {
-                        response = "Failed to update attendance.";
-                    }
+                  var parts =data.Split(':');
+                  string studentIdListStr = parts[1];
+                    List<int> studentIdList = JsonSerializer.Deserialize<List<int>>(studentIdListStr) ?? new List<int>();
+                    int scheduleIdStr = int.Parse(parts[2]);
+                    response = UpdateAttendance(studentIdList, scheduleIdStr) ? "Attendance updated successfully." : "Failed to update attendance.";
                 }
                 else
                 {
@@ -197,6 +189,28 @@ public class Program
            Console.WriteLine($"Error loading students for course: {ex.Message}");
         }
         return String.Empty;
+    }
+
+    private static bool UpdateAttendance(List<int> studentIdList, int scheduleId)
+    {
+        _studentScheduleService = ServiceProvider?.GetService<IStudentScheduleService>();
+        try
+        {
+            if (_studentScheduleService != null )
+            {
+                return _studentScheduleService.UpdateAttendance(studentIdList, scheduleId);
+            }
+            else
+            {
+                Console.WriteLine("Cannot update attendance at this time.");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating attendance: {ex.Message}");
+            return false;
+        }
     }
 
 }

@@ -9,18 +9,26 @@ namespace DataAccessLayer
 {
     public class StudentScheduleFromSqlServer : IStudentScheduleRepository
     {
-        public bool UpdateAttendance(int studentId, int scheduleId, bool isPresent)
+        public bool UpdateAttendance(List<int> studentIdList, int scheduleId)
         {
             using (var context = new Lab1Prn222Context())
             {
-                var studentSchedule = context.StudentSchedules
-                    .FirstOrDefault(ss => ss.StudentId == studentId && ss.ScheduleId == scheduleId);
-                if (studentSchedule != null && studentSchedule.IsPresent!=isPresent)
+                for(var i = 0; i < studentIdList.Count; i++)
                 {
-                    studentSchedule.IsPresent = isPresent;
-                    int changes= context.SaveChanges();
-                    return changes > 0; 
-                }              
+                    var studentId = studentIdList[i];
+                    var attendance = context.StudentSchedules.FirstOrDefault(a => a.StudentId == studentId && a.ScheduleId == scheduleId);
+                    if (attendance != null)
+                    {
+                        attendance.IsPresent = !attendance.IsPresent;
+                        context.SaveChanges();
+                        int updatedCount = context.SaveChanges();
+                        if (updatedCount <= 0)
+                        {
+                            Console.WriteLine($"Failed to update attendance for student ID: {studentId} in schedule ID: {scheduleId}");
+                            return false;
+                        }
+                    }
+                }
             }
             return true;
         }

@@ -20,9 +20,9 @@ namespace Services
             return date >= today && (date > today || time >= currentTime);
         }
 
-        public bool UpdateAttendance(int studentId, int scheduleId, bool isPresent)
+        public bool UpdateAttendance(List<int> studentIdList, int scheduleId)
         {
-            return _studentScheduleRepository.UpdateAttendance(studentId, scheduleId, isPresent);
+            return _studentScheduleRepository.UpdateAttendance(studentIdList, scheduleId);
         }
     }
 }
