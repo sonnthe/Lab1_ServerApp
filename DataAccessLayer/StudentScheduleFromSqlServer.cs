@@ -19,14 +19,9 @@ namespace DataAccessLayer
                     var attendance = context.StudentSchedules.FirstOrDefault(a => a.StudentId == studentId && a.ScheduleId == scheduleId);
                     if (attendance != null)
                     {
+                        Console.WriteLine($"Updating attendance for student ID: {studentId} in schedule ID: {scheduleId}");
                         attendance.IsPresent = !attendance.IsPresent;
                         context.SaveChanges();
-                        int updatedCount = context.SaveChanges();
-                        if (updatedCount <= 0)
-                        {
-                            Console.WriteLine($"Failed to update attendance for student ID: {studentId} in schedule ID: {scheduleId}");
-                            return false;
-                        }
                     }
                 }
             }

@@ -115,7 +115,7 @@ public class Program
                   string studentIdListStr = parts[1];
                     List<int> studentIdList = JsonSerializer.Deserialize<List<int>>(studentIdListStr) ?? new List<int>();
                     int scheduleIdStr = int.Parse(parts[2]);
-                    response = UpdateAttendance(studentIdList, scheduleIdStr) ? "Attendance updated successfully." : "Failed to update attendance.";
+                    response = UpdateAttendance(studentIdList, scheduleIdStr) ? "Successful" : "Failed";
                 }
                 else
                 {
@@ -161,7 +161,6 @@ public class Program
         {
             _scheduleService = ServiceProvider?.GetService<IScheduleService>();
             var schedulesList = _scheduleService!.GetSchedulesByCourseId(courseId);
-            Console.WriteLine($"Schedules loaded for course ID: {courseId}, Count: {schedulesList?.Count ?? 0}");
             if (schedulesList != null)
             {
                 return System.Text.Json.JsonSerializer.Serialize(schedulesList);
