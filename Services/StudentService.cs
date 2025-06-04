@@ -1,4 +1,5 @@
-﻿using BusinessObjects.DTOs;
+﻿using BusinessObjects;
+using BusinessObjects.DTOs;
 using BusinessObjects.Models;
 using DataAccessLayer;
 using Microsoft.Extensions.DependencyInjection;
